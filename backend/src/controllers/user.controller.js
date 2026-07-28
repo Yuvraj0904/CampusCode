@@ -116,3 +116,114 @@ export const searchUsers = async (req, res) => {
     });
   }
 };
+export const followUser = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const targetUserId = req.params.id;
+
+    // Cannot follow yourself
+    if (currentUserId.toString() === targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot follow yourself.",
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    const alreadyFollowing = currentUser.following.some(
+      (id) => id.toString() === targetUserId,
+    );
+
+    if (alreadyFollowing) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already following this user.",
+      });
+    }
+
+    currentUser.following.push(targetUserId);
+    targetUser.followers.push(currentUserId);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User followed successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const unfollowUser = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const targetUserId = req.params.id;
+
+    // Cannot unfollow yourself
+    if (currentUserId.toString() === targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot unfollow yourself.",
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    // Check if target user exists
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Check if current user is following target user
+    const isFollowing = currentUser.following.some(
+      (id) => id.toString() === targetUserId,
+    );
+
+    if (!isFollowing) {
+      return res.status(400).json({
+        success: false,
+        message: "You are not following this user.",
+      });
+    }
+
+    // Remove from following
+    currentUser.following = currentUser.following.filter(
+      (id) => id.toString() !== targetUserId,
+    );
+
+    // Remove from followers
+    targetUser.followers = targetUser.followers.filter(
+      (id) => id.toString() !== currentUserId.toString(),
+    );
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User unfollowed successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -9,15 +9,15 @@ import resetPasswordTemplate from "../templates/resetPasswordTemplate.js";
 
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { name, username, email, password } = req.body;
 
     // Validation
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required.",
-      });
-    }
+   if (!name || !username || !email || !password) {
+     return res.status(400).json({
+       success: false,
+       message: "All fields are required.",
+     });
+   }
 
     // Check existing user
     const existingUser = await User.findOne({
@@ -35,11 +35,12 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
+   const user = await User.create({
+     name,
+     username,
+     email,
+     password: hashedPassword,
+   });
 
     // Remove password from response
     const userResponse = user.toObject();
