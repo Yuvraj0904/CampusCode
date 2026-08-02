@@ -1,4 +1,6 @@
 import User from "../models/user.models.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 export const getMyProfile = async (req, res) => {
   try {
     return res.status(200).json({
@@ -227,3 +229,48 @@ export const unfollowUser = async (req, res) => {
     });
   }
 };
+
+export const uploadAvatar=async(req,res)=>{
+  try {
+   if (!req.file) {
+     return res.status(400).json({
+       success: false,
+       message: "Please upload an image.",
+     });
+   }
+    const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found.",
+        });
+      }
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: "CampusCode/avatars",
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        });
+           user.avatar = result.secure_url;
+
+           await user.save();
+
+           return res.status(200).json({
+             success: true,
+             message: "Avatar uploaded successfully.",
+             avatar: user.avatar,
+           });
+  } catch (error) {
+       return res.status(500).json({
+         success: false,
+         message: error.message,
+       });
+  }
+}
