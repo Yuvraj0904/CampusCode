@@ -168,7 +168,7 @@ export const updatePost = async (req, res) => {
   }
 };
 
-export const deletePost=async(req,res)=>{
+export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
@@ -202,4 +202,50 @@ export const deletePost=async(req,res)=>{
       message: error.message,
     });
   }
-}
+};
+
+export const toggleLikePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found.",
+      });
+    }
+
+    const alreadyLiked = post.likes.some(
+      (id) => id.toString() === req.user._id.toString(),
+    );
+
+    if (alreadyLiked) {
+      post.likes = post.likes.filter(
+        (id) => id.toString() !== req.user._id.toString(),
+      );
+
+      await post.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Post unliked successfully.",
+        likes: post.likes.length,
+      });
+    }
+
+    post.likes.push(req.user._id);
+
+    await post.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Post liked successfully.",
+      likes: post.likes.length,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
