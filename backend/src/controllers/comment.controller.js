@@ -1,6 +1,6 @@
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js";
-
+import createNotification from "../utils/createNotification.js";
 export const createComment = async (req, res) => {
   try {
     const { content } = req.body;
@@ -24,6 +24,13 @@ export const createComment = async (req, res) => {
     });
     post.commentsCount += 1;
     await post.save();
+    await createNotification({
+      recipient: post.author,
+      sender: req.user._id,
+      type: "comment",
+      post: post._id,
+      comment: comment._id,
+    });
     return res.status(201).json({
       success: true,
       message: "Comment added successfully.",

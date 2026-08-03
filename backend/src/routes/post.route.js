@@ -8,13 +8,17 @@ import {
   updatePost,
   deletePost,
   toggleLikePost,
+  toggleSavePost,
+  getSavedPosts,
 } from "../controllers/post.controller.js";
 
 const router = express.Router();
 router.post("/create", protectRoute, upload.array("images", 5), createPost);
 router.get("/", getAllPosts);
+router.get("/saved", protectRoute, getSavedPosts);
 router.get("/:id", getPostById);
 router.put("/:id", protectRoute, updatePost);
 router.delete("/:id", protectRoute, deletePost);
 router.put("/:id/like", protectRoute, toggleLikePost);
+router.put("/:id/save", protectRoute, toggleSavePost);
 export default router;

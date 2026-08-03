@@ -1,6 +1,8 @@
 import Post from "../models/post.model.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import createNotification from "../utils/createNotification.js";
+import User from "../models/user.models.js";
 export const createPost = async (req, res) => {
   try {
     const {
@@ -236,6 +238,12 @@ export const toggleLikePost = async (req, res) => {
     post.likes.push(req.user._id);
 
     await post.save();
+    await createNotification({
+      recipient: post.author,
+      sender: req.user._id,
+      type: "like",
+      post: post._id,
+    });
 
     return res.status(200).json({
       success: true,
@@ -249,3 +257,75 @@ export const toggleLikePost = async (req, res) => {
     });
   }
 };
+
+export const toggleSavePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    // Check if post exists
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found.",
+      });
+    }
+
+    // Get current user
+    const user = await User.findById(req.user._id);
+
+    const alreadySaved = user.savedPosts.some((id) => id.toString() === postId);
+
+    if (alreadySaved) {
+      user.savedPosts = user.savedPosts.filter(
+        (id) => id.toString() !== postId,
+      );
+
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Post removed from saved posts.",
+      });
+    }
+
+    user.savedPosts.push(postId);
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Post saved successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getSavedPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: "savedPosts",
+      populate: {
+        path: "author",
+        select: "name username avatar",
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: user.savedPosts.length,
+      posts: user.savedPosts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+

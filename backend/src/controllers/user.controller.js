@@ -1,6 +1,7 @@
 import User from "../models/user.models.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import createNotification from "../utils/createNotification.js";
 export const getMyProfile = async (req, res) => {
   try {
     return res.status(200).json({
@@ -158,6 +159,12 @@ export const followUser = async (req, res) => {
     await currentUser.save();
     await targetUser.save();
 
+    await createNotification({
+      recipient: targetUser._id,
+      sender: currentUser._id,
+      type: "follow",
+    });
+    
     return res.status(200).json({
       success: true,
       message: "User followed successfully.",
