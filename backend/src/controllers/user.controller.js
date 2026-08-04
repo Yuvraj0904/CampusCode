@@ -2,6 +2,7 @@ import User from "../models/user.models.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 import createNotification from "../utils/createNotification.js";
+import PointHistory from "../models/pointHistory.model.js";
 export const getMyProfile = async (req, res) => {
   try {
     return res.status(200).json({
@@ -164,7 +165,7 @@ export const followUser = async (req, res) => {
       sender: currentUser._id,
       type: "follow",
     });
-    
+
     return res.status(200).json({
       success: true,
       message: "User followed successfully.",
@@ -237,47 +238,70 @@ export const unfollowUser = async (req, res) => {
   }
 };
 
-export const uploadAvatar=async(req,res)=>{
+export const uploadAvatar = async (req, res) => {
   try {
-   if (!req.file) {
-     return res.status(400).json({
-       success: false,
-       message: "Please upload an image.",
-     });
-   }
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload an image.",
+      });
+    }
     const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found.",
-        });
-      }
-        const result = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            {
-              folder: "CampusCode/avatars",
-            },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            },
-          );
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "CampusCode/avatars",
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        },
+      );
 
-          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-        });
-           user.avatar = result.secure_url;
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    });
+    user.avatar = result.secure_url;
 
-           await user.save();
+    await user.save();
 
-           return res.status(200).json({
-             success: true,
-             message: "Avatar uploaded successfully.",
-             avatar: user.avatar,
-           });
+    return res.status(200).json({
+      success: true,
+      message: "Avatar uploaded successfully.",
+      avatar: user.avatar,
+    });
   } catch (error) {
-       return res.status(500).json({
-         success: false,
-         message: error.message,
-       });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
+export const getUserActivity = async (req, res) => {
+  try {
+    const activities = await PointHistory.find({
+      user: req.user._id,
+    })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "referenceId",
+        select: "title content",
+      });
+
+    return res.status(200).json({
+      success: true,
+      count: activities.length,
+      activities,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

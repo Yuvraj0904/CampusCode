@@ -10,12 +10,16 @@ import {
   toggleLikePost,
   toggleSavePost,
   getSavedPosts,
+  searchPosts,
+  getTrendingPosts,
 } from "../controllers/post.controller.js";
 
 const router = express.Router();
 router.post("/create", protectRoute, upload.array("images", 5), createPost);
 router.get("/", getAllPosts);
 router.get("/saved", protectRoute, getSavedPosts);
+router.get("/search", searchPosts);
+router.get("/trending", getTrendingPosts);
 router.get("/:id", getPostById);
 router.put("/:id", protectRoute, updatePost);
 router.delete("/:id", protectRoute, deletePost);

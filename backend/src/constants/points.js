@@ -1,0 +1,26 @@
+export const POINTS = {
+  // Core
+  CREATE_POST: 10,
+  RECEIVE_LIKE: 2,
+  RECEIVE_COMMENT: 3,
+  FOLLOW_USER: 1,
+
+  // Streak
+  DAILY_LOGIN: 2,
+
+  // Projects
+  SHARE_PROJECT: 15,
+
+  // Q&A
+  ACCEPTED_ANSWER: 20,
+  ANSWER_UPVOTED: 5,
+
+  // Community
+  HACKATHON_PARTICIPATION: 25,
+  HACKATHON_WINNER: 100,
+  CODE_REVIEW: 8,
+  MENTOR_SESSION: 30,
+
+  // Badges
+  BADGE_EARNED: 100,
+};

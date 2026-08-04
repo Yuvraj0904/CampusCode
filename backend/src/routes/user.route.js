@@ -8,6 +8,7 @@ import {
   followUser,
   unfollowUser,
   uploadAvatar,
+  getUserActivity,
 } from "../controllers/user.controller.js";
 import upload from "../middleware/upload.middleware.js";
 const router = express.Router();
@@ -15,9 +16,12 @@ const router = express.Router();
 router.get("/me", protectRoute, getMyProfile);
 router.put("/update-profile", protectRoute, updateProfile);
 router.get("/search/users", searchUsers);
+router.get("/activity", protectRoute, getUserActivity);
 router.get("/:username", getUserProfile);
 router.put("/follow/:id", protectRoute, followUser);
 router.put("/unfollow/:id", protectRoute, unfollowUser);
 
 router.put("/upload-avatar",protectRoute,upload.single("avatar"),uploadAvatar)
+
+
 export default router;

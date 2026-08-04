@@ -31,6 +31,15 @@ export const createComment = async (req, res) => {
       post: post._id,
       comment: comment._id,
     });
+    if (post.author.toString() !== req.user._id.toString()) {
+      await updatePoints({
+        userId: post.author,
+        points: POINTS.RECEIVE_COMMENT,
+        action: "RECEIVE_COMMENT",
+        referenceId: comment._id,
+        referenceModel: "Comment",
+      });
+    }
     return res.status(201).json({
       success: true,
       message: "Comment added successfully.",
