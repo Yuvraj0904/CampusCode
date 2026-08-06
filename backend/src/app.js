@@ -6,6 +6,7 @@ import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comments.route.js";
 import notificationRoutes from "./routes/notification.route.js";
+import leaderboardRoutes from "./routes/leaderboard.route.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -20,4 +21,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/leaderboard", leaderboardRoutes);
 export default app;

@@ -1,6 +1,6 @@
 import User from "../models/user.models.js";
 import PointHistory from "../models/pointHistory.model.js";
-
+import checkBadges from "./checkBadges.js";
 const updatePoints = async ({
   userId,
   points,
@@ -23,6 +23,7 @@ const updatePoints = async ({
     referenceId,
     referenceModel,
   });
+  await checkBadges(userId);
 };
 
 export default updatePoints;

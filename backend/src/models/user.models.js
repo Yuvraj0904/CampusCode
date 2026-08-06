@@ -118,10 +118,21 @@ const userSchema = new mongoose.Schema(
 
     badges: [
       {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Badge",
       },
     ],
+    points: {
+      type: Number,
+      default: 0,
+    },
 
+    badges: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Badge",
+      },
+    ],
     role: {
       type: String,
       enum: ["student", "admin"],

@@ -6,6 +6,7 @@ export const getNotifications = async (req, res) => {
     })
       .populate("sender", "name username avatar")
       .populate("post", "title")
+      .populate("badge")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

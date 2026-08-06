@@ -25,10 +25,13 @@ const notificationSchema = new mongoose.Schema(
       ref: "Comment",
       default: null,
     },
-
+    badge: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Badge",
+    },
     type: {
       type: String,
-      enum: ["follow", "like", "comment"],
+      enum: ["follow", "like", "comment", "badge"],
       required: true,
     },
 
