@@ -138,7 +138,10 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "admin"],
       default: "student",
     },
-
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
     // Authentication
     isVerified: {
       type: Boolean,

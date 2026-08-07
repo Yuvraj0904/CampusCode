@@ -44,7 +44,14 @@ const postSchema = new mongoose.Schema(
       ],
       required: true,
     },
-
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     // Tags
     tags: [
       {

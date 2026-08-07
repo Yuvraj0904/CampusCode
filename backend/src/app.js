@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
+import adminRoutes from "./routes/admin.route.js";
 import commentRoutes from "./routes/comments.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import leaderboardRoutes from "./routes/leaderboard.route.js";
@@ -23,4 +24,5 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/admin", adminRoutes);
 export default app;

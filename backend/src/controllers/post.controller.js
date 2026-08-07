@@ -91,11 +91,14 @@ export const getAllPosts = async (req, res) => {
 
     const hasNextPage = page < totalPages;
     const hasPreviousPage = page > 1;
-    const posts = await Post.find()
-      .populate("author", "name username avatar")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+  const posts = await Post.find()
+    .populate("author", "name username avatar")
+    .sort({
+      isPinned: -1,
+      createdAt: -1,
+    })
+    .skip(skip)
+    .limit(limit);
 
     return res.status(200).json({
       success: true,
