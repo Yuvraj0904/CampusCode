@@ -29,5 +29,5 @@ router.patch(
   protectRoute,
   adminMiddleware,
   toggleVerifyPost,
-);
+); 
 export default router;
